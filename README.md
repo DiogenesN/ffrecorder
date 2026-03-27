@@ -32,7 +32,7 @@ For proper operation, copy this script to /usr/local/bin.
 
 # Screenshots
  ffrecorder window:\
-![Alt text](https://raw.githubusercontent.com/DiogenesN/ffrecorder/main/4.png)
+![Alt text](https://raw.githubusercontent.com/DiogenesN/ffrecorder/main/1.png)
  
  Choosing the mode:\
 ![Alt text](https://raw.githubusercontent.com/DiogenesN/ffrecorder/main/2.png)
@@ -41,7 +41,7 @@ For proper operation, copy this script to /usr/local/bin.
 ![Alt text](https://raw.githubusercontent.com/DiogenesN/ffrecorder/main/3.png)
 
  After clicking on 'Record', this dialog appears where you can 'Stop Recording':\
-![Alt text](https://raw.githubusercontent.com/DiogenesN/ffrecorder/main/2.png)
+![Alt text](https://raw.githubusercontent.com/DiogenesN/ffrecorder/main/4.png)
 
 That's it!
 
