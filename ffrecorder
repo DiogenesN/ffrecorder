@@ -1,0 +1,103 @@
+#!/bin/bash
+# ffrecorder 1.0
+# Record everything you see or hear.
+# You can record:
+# microphone
+# system audio
+# video with audio
+# video without audio
+# It will save the recording in /home/username directory
+# Depends:
+#	yad
+#	sed
+#	gawk
+#	grep
+#	bash
+#	ffmpeg
+#	coreutils
+#	wf-recorder
+#	pipewire-pulse
+#	pulseaudio-utils
+# NOTE: For proper operation, copy this script to /usr/local/bin/
+
+echo "Launched ffrecorder"
+
+SOURCES=$(pactl list sources short | awk '{print $2}' | paste -sd'!' -)
+PIDFILE="/tmp/ffrecorder_recorder.pid"
+
+cleanup() {
+	# Kill recording process if running
+	if [ -f "$PIDFILE" ]; then
+		PID=$(cat "$PIDFILE")
+		kill "$PID" 2>/dev/null
+		rm -f "$PIDFILE"
+	fi
+
+	# Kill any yad dialogs we started
+	killall yad 2>/dev/null
+
+	echo "Clean exit ffrecorder"
+	exit 0
+}
+
+# Catch Ctrl+C, script exit, termination
+trap cleanup INT TERM EXIT
+
+HOME_DIR="$HOME"
+
+while true; do
+	RESULT=$(yad \
+		--title="FF Recorder" \
+		--form \
+		--center \
+		--on-top \
+		--no-escape \
+		--undecorated \
+		--text-align=center \
+		--buttons-layout=center \
+		--field="Mode:CB" "Audio!Video" \
+		--field="Source:CB" "$SOURCES" \
+		--text="\nRecordings are saved in:\n$HOME_DIR" \
+		--button="Record:0" \
+		--button="Cancel:1")
+
+	RET=$?
+
+	[ $RET -eq 1 ] && break
+
+	MODE=$(echo "$RESULT" | cut -d'|' -f1)
+	SOURCE=$(echo "$RESULT" | cut -d'|' -f2)
+
+	TIMESTAMP=$(date +%F_%H-%M-%S)
+
+	if [ "$MODE" = "Audio" ]; then
+		OUTFILE="$HOME_DIR/audio-ffrecorder_$TIMESTAMP.flac"
+		ffmpeg -f pulse -i "$SOURCE" -c:a flac "$OUTFILE" &
+	else
+		OUTFILE="$HOME_DIR/video-ffrecorder_$TIMESTAMP.mp4"
+		wf-recorder --no-damage --framerate 30 --muxer mp4 --audio="$SOURCE" -f "$OUTFILE" &
+	fi
+
+	echo $! > "$PIDFILE"
+
+	# Stop dialog (blocks here)
+	yad \
+		--title="Recording..." \
+		--text="\n\nRecording in progress...\n\nClick below to stop." \
+		--button="Stop Recording:0" \
+		--center \
+		--on-top \
+		--no-escape \
+		--undecorated \
+		--text-align=center \
+		--buttons-layout=center
+
+	# Stop after dialog closes
+	if [ -f "$PIDFILE" ]; then
+		kill "$(cat "$PIDFILE")" 2>/dev/null
+		rm -f "$PIDFILE"
+	fi
+done
+
+echo "Closed ffrecorder"
+exit 0
