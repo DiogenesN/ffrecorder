@@ -30,6 +30,9 @@ A simple audio and screen recorder. It was tested on Debian 13 Stable, on Waylan
 # NOTE:
 For proper operation, copy this script to /usr/local/bin.
 
+# Video overview
+[![Linux apps](https://img.youtube.com/vi/EIScKYU6a5c/0.jpg)](https://youtu.be/EIScKYU6a5c)
+
 # Screenshots
  ffrecorder window:\
 ![Alt text](https://raw.githubusercontent.com/DiogenesN/ffrecorder/main/1.png)
